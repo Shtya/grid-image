@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
   <meta charset="UTF-8">
 
@@ -9,7 +8,7 @@
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
   >
 
-  <title>3×3 Image Grid Viewer</title>
+  <title>Tracing Grid</title>
 
   <style>
 
@@ -21,95 +20,47 @@
     html,
     body {
       margin: 0;
-      padding: 0;
-
       width: 100%;
       height: 100%;
-
       overflow: hidden;
-
-      background: #ffffff;
-
+      background: white;
       font-family: Arial, sans-serif;
     }
 
     body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      touch-action: manipulation;
     }
-
-
-    /* =========================================
-       MAIN APP
-    ========================================= */
 
     .app {
       width: 100%;
       height: 100dvh;
-
       display: flex;
       flex-direction: column;
-
-      background: #ffffff;
+      background: white;
     }
 
-
-    /* =========================================
-       IMAGE CONTAINER
-    ========================================= */
+    /* =========================
+       IMAGE AREA
+    ========================= */
 
     .viewer-wrapper {
-
       width: 100%;
-
-      /*
-        الصورة مربعة، لذلك نحافظ على
-        نسبة 1:1 للـ container
-      */
-
       aspect-ratio: 1 / 1;
-
       flex-shrink: 0;
-
-      background: #ffffff;
-
       overflow: hidden;
-
-      position: relative;
+      background: white;
     }
 
-
-    /*
-      الـ viewport الحقيقي للمربع الحالي
-    */
-
     .viewer {
-
       width: 100%;
       height: 100%;
-
       overflow: hidden;
-
       position: relative;
-
       background: white;
-
       touch-action: pan-y;
     }
 
-
-    /*
-      الصورة الأصلية
-
-      نكبرها 3 مرات لكي تمثل شبكة 3×3.
-
-      لا يوجد object-fit هنا.
-      الصورة تعتمد على حجم الـ container.
-    */
-
     .image {
-
       position: absolute;
 
       width: 300%;
@@ -128,364 +79,481 @@
       -webkit-user-drag: none;
       pointer-events: none;
 
+      filter:
+        grayscale(var(--gray))
+        brightness(var(--brightness))
+        contrast(var(--contrast))
+        saturate(var(--saturation));
+
+      opacity: var(--opacity);
+
       transition:
         left 0.2s ease,
         top 0.2s ease;
     }
 
 
-    /* =========================================
+    /* =========================
        CONTROLS AREA
-    ========================================= */
+    ========================= */
 
     .controls-area {
-
       flex: 1;
-
       min-height: 0;
 
-      display: flex;
-      flex-direction: column;
-
-      justify-content: flex-start;
-      align-items: center;
-
-      padding-top: 14px;
+      overflow-y: auto;
 
       background: #f5f5f5;
 
       border-top: 1px solid #ddd;
+
+      padding: 10px 14px 18px;
     }
 
 
-    /* رقم المربع */
-
     .position {
+      text-align: center;
 
-      margin-bottom: 12px;
-
-      font-size: 14px;
-
+      font-size: 13px;
       font-weight: bold;
 
       color: #333;
 
-      direction: rtl;
+      margin-bottom: 9px;
     }
 
 
-    /* =========================================
-       ARROW CONTROLS
-    ========================================= */
+    /* =========================
+       ARROWS
+    ========================= */
 
     .controls {
-
       direction: ltr;
 
       display: grid;
 
       grid-template-columns:
-        58px
-        58px
-        58px;
+        52px
+        52px
+        52px;
 
       grid-template-rows:
-        58px
-        58px
-        58px;
+        52px
+        52px
+        52px;
 
-      gap: 7px;
+      gap: 6px;
 
       justify-content: center;
-      align-items: center;
     }
 
 
     button {
-
-      width: 58px;
-      height: 58px;
+      width: 52px;
+      height: 52px;
 
       border: 1px solid #d0d0d0;
 
-      border-radius: 14px;
+      border-radius: 13px;
 
-      background: #ffffff;
+      background: white;
 
       color: #222;
 
-      font-size: 27px;
+      font-size: 24px;
 
       display: flex;
-
       align-items: center;
       justify-content: center;
 
+      box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.1);
+
       cursor: pointer;
 
-      box-shadow:
-        0 3px 10px rgba(0, 0, 0, 0.10);
-
-      transition:
-        transform 0.12s ease,
-        background 0.12s ease;
+      touch-action: manipulation;
     }
 
 
     button:active:not(:disabled) {
-
       transform: scale(0.92);
-
-      background: #eeeeee;
+      background: #eee;
     }
 
 
     button:disabled {
-
       opacity: 0.3;
-
-      cursor: not-allowed;
     }
 
 
-    /* أماكن الأسهم */
-
     .up {
-
       grid-column: 2;
       grid-row: 1;
     }
 
 
     .left {
-
       grid-column: 1;
       grid-row: 2;
     }
 
 
     .home {
-
       grid-column: 2;
       grid-row: 2;
-
       font-size: 20px;
     }
 
 
     .right {
-
       grid-column: 3;
       grid-row: 2;
     }
 
 
     .down {
-
       grid-column: 2;
       grid-row: 3;
     }
 
 
-    /* =========================================
-       MOBILE
-    ========================================= */
+    /* =========================
+       IMAGE EFFECTS
+    ========================= */
 
-    @media (max-width: 600px) {
+    .adjustments {
+      max-width: 500px;
 
-      .controls-area {
+      margin: 12px auto 0;
 
-        padding-top: 10px;
-      }
-
-
-      .position {
-
-        font-size: 13px;
-
-        margin-bottom: 8px;
-      }
-
-
-      .controls {
-
-        grid-template-columns:
-          52px
-          52px
-          52px;
-
-        grid-template-rows:
-          52px
-          52px
-          52px;
-
-        gap: 6px;
-      }
-
-
-      button {
-
-        width: 52px;
-        height: 52px;
-
-        font-size: 24px;
-      }
-
+      direction: rtl;
     }
 
 
-    /* =========================================
-       VERY SMALL PHONES
-    ========================================= */
+    .adjustments-title {
+      text-align: center;
+
+      font-size: 13px;
+      font-weight: bold;
+
+      margin-bottom: 8px;
+    }
+
+
+    .slider-row {
+      display: grid;
+
+      grid-template-columns:
+        70px
+        1fr
+        42px;
+
+      align-items: center;
+
+      gap: 7px;
+
+      margin: 6px 0;
+    }
+
+
+    .slider-row label {
+      font-size: 12px;
+      color: #444;
+    }
+
+
+    .slider-row input {
+      width: 100%;
+      accent-color: #222;
+    }
+
+
+    .value {
+      text-align: center;
+
+      font-size: 11px;
+
+      color: #666;
+    }
+
+
+    /* =========================
+       PRESETS
+    ========================= */
+
+    .quick {
+      display: flex;
+
+      justify-content: center;
+
+      gap: 7px;
+
+      margin-top: 10px;
+    }
+
+
+    .quick button {
+      width: auto;
+      height: 36px;
+
+      padding: 0 12px;
+
+      border-radius: 9px;
+
+      font-size: 12px;
+    }
+
+
+    /* =========================
+       SMALL PHONES
+    ========================= */
 
     @media (max-height: 650px) {
 
       .controls-area {
-
         padding-top: 6px;
       }
 
-
-      .position {
-
-        margin-bottom: 5px;
-
-        font-size: 12px;
+      .adjustments {
+        margin-top: 6px;
       }
 
-
-      .controls {
-
-        grid-template-columns:
-          46px
-          46px
-          46px;
-
-        grid-template-rows:
-          46px
-          46px
-          46px;
-
-        gap: 5px;
-      }
-
-
-      button {
-
-        width: 46px;
-        height: 46px;
-
-        font-size: 21px;
+      .slider-row {
+        margin: 3px 0;
       }
 
     }
 
   </style>
-
 </head>
 
 
 <body>
 
 
-  <div class="app">
+<div class="app">
 
 
-    <!-- =====================================
-         IMAGE
-    ====================================== -->
+  <!-- =========================
+       IMAGE
+  ========================== -->
 
-    <div class="viewer-wrapper">
+  <div class="viewer-wrapper">
 
-      <div
-        class="viewer"
-        id="viewer"
+    <div
+      class="viewer"
+      id="viewer"
+    >
+
+      <!--
+        ضع صورتك بجانب index.html
+        وسمّها image.png
+      -->
+
+      <img
+        id="image"
+        class="image"
+        src="image.png"
+        alt="الصورة"
       >
 
-        <img
-          id="image"
-          class="image"
-          src="image.png"
-          alt="الصورة"
-        >
+    </div>
 
-      </div>
+  </div>
+
+
+  <!-- =========================
+       CONTROLS
+  ========================== -->
+
+  <div class="controls-area">
+
+
+    <div
+      class="position"
+      id="position"
+    >
+      المربع 1 من 9 — الصف 1، العمود 1
+    </div>
+
+
+    <div class="controls">
+
+
+      <button
+        id="up"
+        class="up"
+      >
+        ↑
+      </button>
+
+
+      <button
+        id="left"
+        class="left"
+      >
+        ←
+      </button>
+
+
+      <button
+        id="home"
+        class="home"
+      >
+        ⌂
+      </button>
+
+
+      <button
+        id="right"
+        class="right"
+      >
+        →
+      </button>
+
+
+      <button
+        id="down"
+        class="down"
+      >
+        ↓
+      </button>
+
 
     </div>
 
 
-    <!-- =====================================
-         CONTROLS
-    ====================================== -->
+    <!-- =========================
+         IMAGE SETTINGS
+    ========================== -->
 
-    <div class="controls-area">
+    <div class="adjustments">
 
 
-      <div
-        class="position"
-        id="position"
-      >
-        المربع 1 من 9 — الصف 1، العمود 1
+      <div class="adjustments-title">
+        تحسين الصورة للرسم
       </div>
 
 
-      <div class="controls">
+      <!-- Contrast -->
 
+      <div class="slider-row">
 
-        <!-- UP -->
+        <label>
+          التباين
+        </label>
 
-        <button
-          id="up"
-          class="up"
-          aria-label="أعلى"
+        <input
+          id="contrast"
+          type="range"
+          min="100"
+          max="500"
+          value="320"
         >
-          ↑
+
+        <span
+          id="contrastValue"
+          class="value"
+        >
+          320%
+        </span>
+
+      </div>
+
+
+      <!-- Brightness -->
+
+      <div class="slider-row">
+
+        <label>
+          السطوع
+        </label>
+
+        <input
+          id="brightness"
+          type="range"
+          min="70"
+          max="140"
+          value="110"
+        >
+
+        <span
+          id="brightnessValue"
+          class="value"
+        >
+          110%
+        </span>
+
+      </div>
+
+
+      <!-- Saturation -->
+
+      <div class="slider-row">
+
+        <label>
+          التشبع
+        </label>
+
+        <input
+          id="saturation"
+          type="range"
+          min="0"
+          max="200"
+          value="0"
+        >
+
+        <span
+          id="saturationValue"
+          class="value"
+        >
+          0%
+        </span>
+
+      </div>
+
+
+      <!-- Opacity -->
+
+      <div class="slider-row">
+
+        <label>
+          الشفافية
+        </label>
+
+        <input
+          id="opacity"
+          type="range"
+          min="20"
+          max="100"
+          value="92"
+        >
+
+        <span
+          id="opacityValue"
+          class="value"
+        >
+          92%
+        </span>
+
+      </div>
+
+
+      <!-- Presets -->
+
+      <div class="quick">
+
+        <button id="traceMode">
+          وضع الرسم
         </button>
 
-
-        <!-- LEFT -->
-
-        <button
-          id="left"
-          class="left"
-          aria-label="يسار"
-        >
-          ←
+        <button id="normalMode">
+          طبيعي
         </button>
 
-
-        <!-- HOME -->
-
-        <button
-          id="home"
-          class="home"
-          aria-label="البداية"
-        >
-          ⌂
+        <button id="blackMode">
+          أسود قوي
         </button>
-
-
-        <!-- RIGHT -->
-
-        <button
-          id="right"
-          class="right"
-          aria-label="يمين"
-        >
-          →
-        </button>
-
-
-        <!-- DOWN -->
-
-        <button
-          id="down"
-          class="down"
-          aria-label="أسفل"
-        >
-          ↓
-        </button>
-
 
       </div>
 
@@ -496,363 +564,495 @@
   </div>
 
 
-  <script>
+</div>
 
 
-    /* =========================================
-       CURRENT GRID POSITION
-    ========================================= */
 
-    let row = 0;
-
-    let col = 0;
+<script>
 
 
-    /* =========================================
-       UPDATE IMAGE
-    ========================================= */
+/* =========================
+   GRID POSITION
+========================= */
 
-    function updateView() {
+let row = 0;
 
-      const image =
-        document.getElementById("image");
-
-
-      /*
-        كل حركة = ثلث الصورة
-      */
-
-      image.style.left =
-        (-col * 100) + "%";
+let col = 0;
 
 
-      image.style.top =
-        (-row * 100) + "%";
+const image =
+  document.getElementById("image");
 
 
-      /*
-        رقم المربع
+/* =========================
+   UPDATE GRID
+========================= */
 
-        1 2 3
-        4 5 6
-        7 8 9
-      */
+function updateView() {
 
-      const square =
-        row * 3 + col + 1;
+  /*
+    شبكة:
 
-
-      document
-        .getElementById("position")
-        .textContent =
-        `المربع ${square} من 9 — الصف ${row + 1}، العمود ${col + 1}`;
+    1 2 3
+    4 5 6
+    7 8 9
+  */
 
 
-      /*
-        Disable buttons at edges
-      */
-
-      document
-        .getElementById("up")
-        .disabled =
-        row === 0;
+  image.style.left =
+    (-col * 100) + "%";
 
 
-      document
-        .getElementById("down")
-        .disabled =
-        row === 2;
+  image.style.top =
+    (-row * 100) + "%";
 
 
-      document
-        .getElementById("left")
-        .disabled =
-        col === 0;
+  const square =
+    row * 3 + col + 1;
 
 
-      document
-        .getElementById("right")
-        .disabled =
-        col === 2;
+  document
+    .getElementById("position")
+    .textContent =
+    `المربع ${square} من 9 — الصف ${row + 1}، العمود ${col + 1}`;
+
+
+  document
+    .getElementById("up")
+    .disabled =
+    row === 0;
+
+
+  document
+    .getElementById("down")
+    .disabled =
+    row === 2;
+
+
+  document
+    .getElementById("left")
+    .disabled =
+    col === 0;
+
+
+  document
+    .getElementById("right")
+    .disabled =
+    col === 2;
+
+}
+
+
+/* =========================
+   MOVE
+========================= */
+
+function move(rowChange, colChange) {
+
+  row += rowChange;
+
+  col += colChange;
+
+
+  row =
+    Math.max(
+      0,
+      Math.min(2, row)
+    );
+
+
+  col =
+    Math.max(
+      0,
+      Math.min(2, col)
+    );
+
+
+  updateView();
+
+}
+
+
+/* =========================
+   HOME
+========================= */
+
+function goHome() {
+
+  row = 0;
+
+  col = 0;
+
+  updateView();
+
+}
+
+
+/* =========================
+   BUTTONS
+========================= */
+
+document
+  .getElementById("up")
+  .onclick =
+  () => move(-1, 0);
+
+
+document
+  .getElementById("down")
+  .onclick =
+  () => move(1, 0);
+
+
+document
+  .getElementById("left")
+  .onclick =
+  () => move(0, -1);
+
+
+document
+  .getElementById("right")
+  .onclick =
+  () => move(0, 1);
+
+
+document
+  .getElementById("home")
+  .onclick =
+  goHome;
+
+
+/* =========================
+   KEYBOARD
+========================= */
+
+document.addEventListener(
+  "keydown",
+  function(event) {
+
+    if (event.key === "ArrowUp") {
+
+      event.preventDefault();
+
+      move(-1, 0);
 
     }
 
 
-    /* =========================================
-       MOVE
-    ========================================= */
+    if (event.key === "ArrowDown") {
 
-    function move(rowChange, colChange) {
+      event.preventDefault();
 
-      row += rowChange;
-
-      col += colChange;
-
-
-      /*
-        Don't go outside 3×3
-      */
-
-      row =
-        Math.max(
-          0,
-          Math.min(2, row)
-        );
-
-
-      col =
-        Math.max(
-          0,
-          Math.min(2, col)
-        );
-
-
-      updateView();
+      move(1, 0);
 
     }
 
 
-    /* =========================================
-       HOME
-    ========================================= */
+    if (event.key === "ArrowLeft") {
 
-    function goHome() {
+      event.preventDefault();
 
-      row = 0;
-
-      col = 0;
-
-      updateView();
+      move(0, -1);
 
     }
 
 
-    /* =========================================
-       BUTTON EVENTS
-    ========================================= */
+    if (event.key === "ArrowRight") {
 
-    document
-      .getElementById("up")
-      .addEventListener(
-        "click",
-        () => move(-1, 0)
-      );
+      event.preventDefault();
+
+      move(0, 1);
+
+    }
 
 
-    document
-      .getElementById("down")
-      .addEventListener(
-        "click",
-        () => move(1, 0)
-      );
+    if (event.key === "Home") {
+
+      event.preventDefault();
+
+      goHome();
+
+    }
+
+  }
+);
 
 
-    document
-      .getElementById("left")
-      .addEventListener(
-        "click",
-        () => move(0, -1)
-      );
+/* =========================
+   MOBILE SWIPE
+========================= */
+
+let startX = 0;
+
+let startY = 0;
 
 
-    document
-      .getElementById("right")
-      .addEventListener(
-        "click",
-        () => move(0, 1)
-      );
+const viewer =
+  document.getElementById("viewer");
 
 
-    document
-      .getElementById("home")
-      .addEventListener(
-        "click",
-        goHome
-      );
+viewer.addEventListener(
+  "touchstart",
+  function(event) {
+
+    const touch =
+      event.changedTouches[0];
+
+    startX =
+      touch.clientX;
+
+    startY =
+      touch.clientY;
+
+  },
+  {
+    passive: true
+  }
+);
 
 
-    /* =========================================
-       KEYBOARD SUPPORT
-    ========================================= */
+viewer.addEventListener(
+  "touchend",
+  function(event) {
 
-    document.addEventListener(
-      "keydown",
-      function(event) {
-
-        switch (event.key) {
-
-          case "ArrowUp":
-
-            event.preventDefault();
-
-            move(-1, 0);
-
-            break;
+    const touch =
+      event.changedTouches[0];
 
 
-          case "ArrowDown":
-
-            event.preventDefault();
-
-            move(1, 0);
-
-            break;
+    const dx =
+      touch.clientX - startX;
 
 
-          case "ArrowLeft":
-
-            event.preventDefault();
-
-            move(0, -1);
-
-            break;
+    const dy =
+      touch.clientY - startY;
 
 
-          case "ArrowRight":
-
-            event.preventDefault();
-
-            move(0, 1);
-
-            break;
+    const threshold = 40;
 
 
-          case "Home":
+    if (
+      Math.abs(dx) < threshold &&
+      Math.abs(dy) < threshold
+    ) {
 
-            event.preventDefault();
+      return;
 
-            goHome();
+    }
 
-            break;
 
-        }
+    if (
+      Math.abs(dx) >
+      Math.abs(dy)
+    ) {
+
+      if (dx > 0) {
+
+        move(0, -1);
+
+      } else {
+
+        move(0, 1);
 
       }
-    );
 
+    } else {
 
-    /* =========================================
-       MOBILE SWIPE
-    ========================================= */
+      if (dy > 0) {
 
-    let startX = 0;
+        move(-1, 0);
 
-    let startY = 0;
+      } else {
 
+        move(1, 0);
 
-    const viewer =
-      document.getElementById("viewer");
-
-
-    viewer.addEventListener(
-      "touchstart",
-      function(event) {
-
-        const touch =
-          event.changedTouches[0];
-
-        startX =
-          touch.clientX;
-
-        startY =
-          touch.clientY;
-
-      },
-      {
-        passive: true
       }
-    );
+
+    }
+
+  },
+  {
+    passive: true
+  }
+);
 
 
-    viewer.addEventListener(
-      "touchend",
-      function(event) {
+/* =========================
+   IMAGE EFFECTS
+========================= */
 
-        const touch =
-          event.changedTouches[0];
-
-
-        const deltaX =
-          touch.clientX - startX;
+const contrast =
+  document.getElementById("contrast");
 
 
-        const deltaY =
-          touch.clientY - startY;
+const brightness =
+  document.getElementById("brightness");
 
 
-        const threshold = 40;
+const saturation =
+  document.getElementById("saturation");
 
 
-        /*
-          Ignore small touches
-        */
-
-        if (
-          Math.abs(deltaX) < threshold &&
-          Math.abs(deltaY) < threshold
-        ) {
-
-          return;
-
-        }
+const opacity =
+  document.getElementById("opacity");
 
 
-        /*
-          Horizontal swipe
-        */
+function updateEffects() {
 
-        if (
-          Math.abs(deltaX) >
-          Math.abs(deltaY)
-        ) {
-
-          if (deltaX > 0) {
-
-            move(0, -1);
-
-          } else {
-
-            move(0, 1);
-
-          }
-
-        }
+  image.style.setProperty(
+    "--contrast",
+    contrast.value + "%"
+  );
 
 
-        /*
-          Vertical swipe
-        */
-
-        else {
-
-          if (deltaY > 0) {
-
-            move(-1, 0);
-
-          } else {
-
-            move(1, 0);
-
-          }
-
-        }
-
-      },
-      {
-        passive: true
-      }
-    );
+  image.style.setProperty(
+    "--brightness",
+    brightness.value + "%"
+  );
 
 
-    /* =========================================
-       INITIALIZE
-    ========================================= */
+  image.style.setProperty(
+    "--saturation",
+    saturation.value + "%"
+  );
 
-    updateView();
 
-  </script>
+  image.style.setProperty(
+    "--opacity",
+    opacity.value / 100
+  );
 
+
+  document
+    .getElementById("contrastValue")
+    .textContent =
+    contrast.value + "%";
+
+
+  document
+    .getElementById("brightnessValue")
+    .textContent =
+    brightness.value + "%";
+
+
+  document
+    .getElementById("saturationValue")
+    .textContent =
+    saturation.value + "%";
+
+
+  document
+    .getElementById("opacityValue")
+    .textContent =
+    opacity.value + "%";
+
+}
+
+
+/* =========================
+   SLIDERS
+========================= */
+
+contrast.addEventListener(
+  "input",
+  updateEffects
+);
+
+
+brightness.addEventListener(
+  "input",
+  updateEffects
+);
+
+
+saturation.addEventListener(
+  "input",
+  updateEffects
+);
+
+
+opacity.addEventListener(
+  "input",
+  updateEffects
+);
+
+
+/* =========================
+   PRESETS
+========================= */
+
+
+/*
+  أفضل إعداد مبدئي للرسم
+*/
+
+document
+  .getElementById("traceMode")
+  .onclick = function() {
+
+    contrast.value = 320;
+
+    brightness.value = 110;
+
+    saturation.value = 0;
+
+    opacity.value = 92;
+
+    updateEffects();
+
+  };
+
+
+/*
+  الوضع الطبيعي
+*/
+
+document
+  .getElementById("normalMode")
+  .onclick = function() {
+
+    contrast.value = 100;
+
+    brightness.value = 100;
+
+    saturation.value = 100;
+
+    opacity.value = 100;
+
+    updateEffects();
+
+  };
+
+
+/*
+  خطوط قوية
+*/
+
+document
+  .getElementById("blackMode")
+  .onclick = function() {
+
+    contrast.value = 500;
+
+    brightness.value = 105;
+
+    saturation.value = 0;
+
+    opacity.value = 100;
+
+    updateEffects();
+
+  };
+
+
+/* =========================
+   START
+========================= */
+
+updateView();
+
+updateEffects();
+
+</script>
 
 </body>
-
 </html>
